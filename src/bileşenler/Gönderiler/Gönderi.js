@@ -1,11 +1,28 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Yorumlar from '../Yorumlar/Yorumlar';
 import BeğenBölümü from './BeğenBölümü';
 import GönderiBaşlığı from './GönderiBaşlığı';
 
 const Gönderi = props => {
   // 🔥 Bu bileşenin parentının aşağıdaki propları düzgün gönderdiğinden emin olun.
-  const { gönderi, gonderiyiBegen } = props;
+  const { gönderi, gonderiyiBegen } = props,
+        [likesList, setLikesList] = useState([]),
+        [heartColor, setHeartColor] = useState("black");
+
+  const likesControl = (gonderiID) => {
+    let like = likesList.includes(gonderiID);
+    if(like) {
+      setLikesList(likesList.filter(id => id !== gonderiID));
+      setHeartColor("black");
+      gonderiyiBegen(gonderiID, false);
+    }else{
+      let newList = [...likesList];
+      newList.push(gonderiID)
+      setLikesList(newList);
+      setHeartColor("red");
+      gonderiyiBegen(gonderiID, false);
+    }
+  };
 
   return (
     <div className='post-border'>
@@ -21,9 +38,9 @@ const Gönderi = props => {
         />
       </div>
       {/* BeğenBölümü düzgün çalışması için ihtiyaç duyduğu tüm proplara sahip mi? */}
-      <BeğenBölümü gonderiyiBegen={() => gonderiyiBegen(gönderi.id)}/>
+      <BeğenBölümü begeniSayisi={gönderi.likes} gonderiyiBegen={() => likesControl(gönderi.id)} heartColor={heartColor}/>
       {/* Yorumlar da proplara dikkat istiyor! */}
-      <Yorumlar />
+      <Yorumlar yorumlar={gönderi.comments}/>
     </div>
   );
 };
